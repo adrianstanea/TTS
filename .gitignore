@@ -1,3 +1,6 @@
+# Local development projects
+.external_repos/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
