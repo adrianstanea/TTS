@@ -1,0 +1,104 @@
+{
+	"name": "Deep Learning: GPU",
+	"build": {
+		"context": "..",
+		"dockerfile": "../Dockerfile",
+		"args": {
+			"PYTHON_VERSION": "3.10"
+		}
+	},
+	"runArgs": [
+		"--gpus=all",
+		//  Setting privileged is sometimes necessary to make GPUs visible
+		// https://bbs.archlinux.org/viewtopic.php?id=266915
+		"--privileged"
+	],
+	"mounts": [
+		// Bind mount data here if necessary e.g.
+		//"source=/vol/biodata/data,target=${containerWorkspaceFolder}/mounted-data,type=bind"
+	],
+	"customizations": { // might have to adapt 
+		"vscode": {
+			"settings": {
+				// This is the venv path set in the Dockerfile
+				"python.defaultInterpreterPath": "/opt/venv/bin/python"
+			},
+			"extensions": [
+				"alefragnani.Bookmarks",
+				"vsls-contrib.gistfs",
+				"ms-toolsai.jupyter-keymap",
+				"PKief.material-icon-theme",
+				"Equinusocio.vsc-material-theme",
+				"KevinRose.vsc-python-indent",
+				"Remisa.shellman",
+				"vscodevim.vim",
+				"vscode-icons-team.vscode-icons",
+				"almenon.arepl",
+				"njpwerner.autodocstring",
+				"ms-python.autopep8",
+				"rogalmic.bash-debug",
+				"mads-hartmann.bash-ide-vscode",
+				"ms-python.black-formatter",
+				"twxs.cmake",
+				"ms-vscode.cmake-tools",
+				"streetsidesoftware.code-spell-checker",
+				"ms-azuretools.vscode-docker",
+				"sleistner.vscode-fileutils",
+				"mhutchie.git-graph",
+				"donjayamanne.githistory",
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"github.vscode-github-actions",
+				"GitHub.vscode-pull-request-github",
+				"codezombiech.gitignore",
+				"eamodio.gitlens",
+				"ms-vscode.hexeditor",
+				"oderwat.indent-rainbow",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"VisualStudioExptTeam.intellicode-api-usage-examples",
+				"ms-toolsai.jupyter",
+				"ms-toolsai.vscode-jupyter-cell-tags",
+				"ms-toolsai.jupyter-renderers",
+				"ms-toolsai.vscode-jupyter-slideshow",
+				"mathematic.vscode-latex",
+				"James-Yu.latex-workshop",
+				"vintharas.learn-vim",
+				"magicstack.MagicPython",
+				"yzhang.markdown-all-in-one",
+				"shd101wyy.markdown-preview-enhanced",
+				"DavidAnson.vscode-markdownlint",
+				"christian-kohler.path-intellisense",
+				"esbenp.prettier-vscode",
+				"ms-python.vscode-pylance",
+				"ms-python.pylint",
+				"ms-python.python",
+				"ms-python.debugpy",
+				"Mukundan.python-docs",
+				"donjayamanne.python-environment-manager",
+				"mgesbert.python-path",
+				"mutantdino.resourcemonitor",
+				"timonwong.shellcheck",
+				"albert.TabOut",
+				"ms-toolsai.tensorboard",
+				"Gruntfuggly.todo-tree",
+				"AndenetAlexander.vim-cheatsheet",
+				"foxundermoon.shell-format"
+			]
+		}
+	},
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"github-cli": "latest",
+		"ghcr.io/devcontainers/features/git:1": {
+			"ppa": true,
+			"version": "os-provided"
+		}
+	},
+	"containerUser": "devEnv",
+	"shutdownAction": "none" // don't stop container on exit
+
+	// "forwardPorts": [],
+
+	// "postCreateCommand": "cat /etc/os-release",
+
+}
