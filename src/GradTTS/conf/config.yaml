@@ -1,0 +1,4 @@
+hydra:
+  run:
+    # The working directory of the experiment -> save the logs and checkpoints
+    dir: /outputs
