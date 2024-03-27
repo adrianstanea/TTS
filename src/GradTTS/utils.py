@@ -91,7 +91,10 @@ def create_symlink(source_dir_name: str, target_path: str):
     logging.debug(f"Creating symlink from {source_path} to {target_path}")
 
     # Check if the symlink already exists
-    if not os.path.exists(source_path):
-        os.symlink(target_path, str(source_path))
+    if not os.path.islink(source_path):
+        if os.path.exists(source_path):
+            logging.info(f"File or directory {source_path} already exists and is not a symlink.")
+        else:
+            os.symlink(target_path, str(source_path))
     else:
-        print(f"Symlink {source_path} already exists.")
+        logging.info(f"Symlink {source_path} already exists.")

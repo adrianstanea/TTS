@@ -46,10 +46,10 @@ class DecoderConfig:
 class TrainConfig:
     log_dir: str = 'logs/new_exp'
     test_size: int = 4
-    n_epochs: int = 10
+    n_epochs: int = 200
     batch_size: int = 16
     seed: int = 37
-    save_every: int = 1
+    save_every: int = 50
     out_size: int = fix_len_compatibility(2*22050//256)
 
 

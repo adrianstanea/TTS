@@ -1,6 +1,7 @@
 import logging
 import os
 import os.path
+import random
 
 import hydra
 import numpy as np
@@ -20,7 +21,7 @@ from utils import create_symlink, plot_tensor, save_plot
 from data import TextMelBatchCollate, TextMelDataset
 
 logger = logging.getLogger("train.py")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 cs = ConfigStore.instance()
 cs.store(name="config", node=GradTTSConfig)
@@ -28,7 +29,7 @@ cs.store(name="config", node=GradTTSConfig)
 
 @hydra.main(config_path="conf", config_name="config")
 def hydra_main(cfg: GradTTSConfig):
-    # Fix hydra working directory issue
+    # Fix hydra working directory issue: keep the original working directory but save logs in the hydra output directory
     os.chdir(get_original_cwd())
     logger.debug(f"Running from: {os.getcwd()}")
     cfg.train.log_dir = hydra.core.hydra_config.HydraConfig.get().runtime.output_dir + '/' + cfg.train.log_dir
@@ -36,7 +37,7 @@ def hydra_main(cfg: GradTTSConfig):
     # =============================================================================
     logger.info("Creating a symlink to dataset...")
     source_dir_name = "DUMMY"
-    target_path = os.path.join(os.path.expanduser('~'), 'datasets', 'LJSpeech')
+    target_path = os.path.join('/datasets', 'LJSpeech')
     create_symlink(source_dir_name, target_path)
     # =============================================================================
     # Hyperparameters that need to be set at runtime
@@ -47,6 +48,8 @@ def hydra_main(cfg: GradTTSConfig):
     logger.info("Initializing random seed...")
     torch.manual_seed(cfg.train.seed)
     np.random.seed(cfg.train.seed)
+    np.random.seed(cfg.train.seed)
+    random.seed(cfg.train.seed)
     # =============================================================================
     logger.info("Initializing tensorboard...")
     writer = SummaryWriter(log_dir=to_absolute_path(cfg.train.log_dir))
@@ -120,9 +123,9 @@ def hydra_main(cfg: GradTTSConfig):
         optimizer = torch.optim.Adam(params=model.parameters(),
                                      lr=cfg.optimizer.learning_rate)
     else:
-        raise NotImplementedError("Only Adam optimizer is supported for now")
+        raise NotImplementedError("Only Adam optimizer is supported")
 
-    logger.info("Logging test batch...")
+    # logger.info("Logging test batch...")
     test_batch = test_dataset.sample_test_batch(size=cfg.train.test_size)
     for i, item in enumerate(test_batch):
         mel = item['y']
@@ -130,7 +133,7 @@ def hydra_main(cfg: GradTTSConfig):
                          global_step=0, dataformats="HWC")
         save_plot(mel.squeeze(), f'{cfg.train.log_dir}/original_{i}.png')
 
-    logger.info("Training...")
+    logger.info(f"Training for {cfg.train.n_epochs} epochs...")
     iteration = 0
     for epoch in range(1, cfg.train.n_epochs + 1):
         model.train()
@@ -167,7 +170,8 @@ def hydra_main(cfg: GradTTSConfig):
                 prior_losses.append(prior_loss.item())
                 diff_losses.append(diff_loss.item())
 
-                if batch_idx % 5 == 0:
+                # Update progress bar every X batches
+                if batch_idx % 10 == 0:
                     msg = f'Epoch: {epoch}, iteration: {iteration} | dur_loss: {dur_loss.item()}, prior_loss: {prior_loss.item()}, diff_loss: {diff_loss.item()}'
                     progress_bar.set_description(msg)
 
@@ -209,6 +213,8 @@ def hydra_main(cfg: GradTTSConfig):
         logger.info(f"Saving model checkpoint at epoch {epoch}...")
         ckpt = model.state_dict()
         torch.save(ckpt, f=f"{cfg.train.log_dir}/grad_{epoch}.pt")
+        logger.info("Model checkpoint saved ... terminating training.")
+        return
 
 
 if __name__ == "__main__":
