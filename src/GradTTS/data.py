@@ -97,6 +97,9 @@ class TextMelDataset(torch.utils.data.Dataset):
         return test_batch
 
     def make_preprocess(self):
+        # TODO: when checking for existing base dir, also make sure that at least 1 file is present as .npy
+        # WHY? train and test will both save to same dir, if train created the dir, test will skip preprocessing
+        # TODO: when i change the output dir of hydra, multiple runs will overwrite the same dir. Sould let the default outputs but map it to the mounted /outputs from docker
         base_dir = os.path.join(os.path.dirname(self.filepaths_and_text[0][0]), "mel")
         logging.debug(f"Preprocessing data in: {base_dir}")
         if os.path.exists(base_dir):
